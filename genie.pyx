@@ -1,25 +1,29 @@
 import numpy as np
 import math
 from mst import mst
+cimport numpy as np
 
 def gini(c):
-	m = len(c)
-	enum = 0
+	cdef np.int_t m = len(c)
+	cdef np.float_t enum = 0
 	for i in range(m-1):
 		for j in range(i+1, m):
 			enum = enum + math.fabs(c[i]-c[j])
-	denum = 0
+	cdef np.float_t denum = 0
 	for i in range(m):
 		denum = denum + c[i]
 	denum = denum * (m-1)
 	return enum / denum
 
-def genie(X, g, k):
-	n = X.shape[0]
-	z = np.arange(0, n)
+def genie(np.ndarray[np.double_t, ndim=2] X, np.double_t g, np.int_t k):
+	cdef np.int_t n = X.shape[0]
+	cdef np.ndarray[np.int_t] z = np.arange(0, n)
 	c = [1] * n
-	M = mst(X)
-	removed_edges = np.zeros(n-1)
+	cdef np.ndarray[np.long_t, ndim=2] M = mst(X)
+	cdef np.ndarray[np.int_t] removed_edges = np.zeros(n-1, dtype=int)
+	cdef np.int_t selected_edge
+	cdef np.int_t min_c
+	cdef np.int_t z1, z2, u, v
 	for j in range(n-k):
 		selected_edge = 0
 		if(gini(c) <= g):
